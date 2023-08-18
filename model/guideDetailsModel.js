@@ -35,6 +35,7 @@ const guideDetailsSchema=mongoose.Schema({
       type:Number,
       required:true
    }
+   
 })
 
 const guideDetailsModel=mongoose.model('guidedetails',guideDetailsSchema)

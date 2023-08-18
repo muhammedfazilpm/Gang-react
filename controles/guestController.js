@@ -4,9 +4,15 @@ const Guidedetails = require("../model/guideDetailsModel");
 const Order = require("../model/orderModel");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
+const Razorpay=require('razorpay')
 require("dotenv").config();
 
 const jwt = require("jsonwebtoken");
+
+var instance = new Razorpay({
+  key_id: process.env.key_id,
+  key_secret: process.env.key_secret
+});
 
 let guestmail;
 let otp;
@@ -271,20 +277,33 @@ const saveDetails = async (req, res) => {
   }
 };
 const bookDeal = async (req, res) => {
+ const guide=req.body.data
+ const date=req.body.formData.date
+ const guides=await Guidedetails.findOne({guidid:guide})
+ const guest =await Guest.findOne({_id:req.body.guest})
+ const sameBooking=await Order.findOne({guideid:guide,dateofbook:date})
+     if(sameBooking){
+      return res.status(200).send({message:"The guide has a booking ",success:false})
+     }
   try {
     const order = new Order({
       guestid: req.body.guest,
+      guest:guest.name,
+      guide:guides.name,
       guideid: req.body.data,
       location: req.body.formData.location,
       dateofbook: req.body.formData.date,
       numberofguest: req.body.formData.numberOfPersons,
+      advance:guides.advance,
+      amount:guides.amount
     });
     const orders = await order.save();
+  
 
     if (orders) {
       res
         .status(200)
-        .send({ message: "pay for confirm booking", success: true });
+        .send({ message: "pay for confirm booking", success: true,data:orders});
     } else {
       res.status(200).send({ message: "something went wrong", success: false });
     }
@@ -292,6 +311,37 @@ const bookDeal = async (req, res) => {
     res.status(500).send({ message: error, success: false });
   }
 };
+const paymentUpdate=async(req,res)=>{
+  const id=req.body.order._id
+  const paymentid=req.body.payment.razorpay_payment_id
+  console.log(paymentid)
+  try {
+    const updateOrder=await Order.findOneAndUpdate({_id:id},{$set:{paymentstatus:"paid",paymentid:paymentid}})
+   
+     if(updateOrder){
+      res.status(200).send({message:"Payment success full",success:true})
+     }else{
+      res.status(200).send({message:'something wrong try after sometime',success:false})
+     }
+    
+  } catch (error) {
+    res.status(500).send({error})
+  }
+}
+
+const getOrders=async(req,res)=>{
+    try {
+      const orders=await Order.find({guestid:req.body.guest})
+      if(orders){
+        res.status(200).send({data:orders,success:true})
+      }
+      else{
+        res.status(400).send({message:"some thing went wrong"})
+      }
+    } catch (error) {
+      res.status(500).send({error})
+    }
+}
 module.exports = {
   registeration,
   otpVerify,
@@ -303,4 +353,6 @@ module.exports = {
   postOrder,
   saveDetails,
   bookDeal,
+  paymentUpdate,
+  getOrders
 };

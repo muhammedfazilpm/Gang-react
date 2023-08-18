@@ -8,6 +8,14 @@ const ordeSchema =mongoose.Schema({
         type:String,
         required:true
     },
+    guide:{
+        type:String,
+        required:true
+    },
+    guest:{
+        type:String,
+        required:true
+    },
     location:{
         type:String,
         required:true
@@ -20,6 +28,10 @@ const ordeSchema =mongoose.Schema({
         type:Number,
         default:0
     },
+    advance:{
+        type:Number,
+        default:0
+    },
     numberofguest:{
         type:Number,
         required:true
@@ -28,7 +40,11 @@ const ordeSchema =mongoose.Schema({
         type:String,
         default:'pending'
 
-    }
+    },
+    paymentid:{
+        type:String,
+        default:0
+     },
 },{
     timestamps:true
 })

@@ -1,6 +1,7 @@
 const Admin = require("../model/adminModel");
 const Guide = require("../model/guideModel");
 const GuideDetails = require("../model/guideDetailsModel");
+const Orders=require('../model/orderModel')
 const Guest = require("../model/guestModel");
 const bcrypt = require("bcryptjs");
 require("dotenv").config();
@@ -233,6 +234,21 @@ const blockGuest = async (req, res) => {
     console.log(error);
   }
 };
+const getOrders=async(req,res)=>{
+ try {
+  const orders=await Orders.find({})
+  if(orders){
+    res.status(200).send({data:orders,success:true})
+  }else{
+    res.status(200).message({message:"there is no order",success:false})
+  }
+ } catch (error) {
+  res.status(500).send({error})
+  
+ }
+
+
+}
 module.exports = {
   adminLogin,
   getAdmin,
@@ -245,4 +261,5 @@ module.exports = {
   blockGuide,
   getGuest,
   blockGuest,
+  getOrders
 };

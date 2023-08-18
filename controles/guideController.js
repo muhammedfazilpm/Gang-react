@@ -1,6 +1,7 @@
 const Guide = require("../model/guideModel");
 const Location = require("../model/locationModel");
 const Details = require("../model/guideDetailsModel");
+const Orders=require("../model/orderModel")
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
@@ -378,6 +379,23 @@ const editProfile = async (req, res) => {
   }
 };
 
+const getOrder=async(req,res)=>{
+  console.log("enters")
+  try {
+    console.log(req.body.guide)
+    const order=await Orders.find({guideid:req.body.guide})
+    if(order){
+      res.status(200).send({data:order,success:true})
+    }else{
+      res.status(200).send({message:"no oreder found"})
+    }
+    
+  } catch (error) {
+    res.status(500).send({error})
+  }
+
+}
+
 module.exports = {
   GuideRegitration,
   login,
@@ -389,4 +407,5 @@ module.exports = {
   getLocation,
   addDetails,
   editProfile,
+  getOrder
 };

@@ -27,5 +27,7 @@ router.post(
   authMiddleware,
   guideController.editProfile
 );
+router.post("/getOrder", authMiddleware, guideController.getOrder);
+
 
 module.exports = router;

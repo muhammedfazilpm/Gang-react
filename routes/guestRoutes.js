@@ -13,5 +13,9 @@ guestroutes.post("/getlocation", guestController.getlocations);
 guestroutes.post("/order", authMiddlewareguest, guestController.postOrder);
 guestroutes.post("/sendDetails", guestController.saveDetails);
 guestroutes.post("/bookorder", authMiddlewareguest, guestController.bookDeal);
+guestroutes.post("/paymentUpdate", guestController.paymentUpdate);
+guestroutes.post("/getOrders", authMiddlewareguest, guestController.getOrders);
+
+
 
 module.exports = guestroutes;

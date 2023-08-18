@@ -15,5 +15,7 @@ adminroutes.get("/getGuest", adminController.getGuest);
 
 adminroutes.post("/blockUser", adminController.blockGuide);
 adminroutes.post("/blockGuest", adminController.blockGuest);
+adminroutes.get("/getOrders", adminController.getOrders);
+
 
 module.exports = adminroutes;
