@@ -21,7 +21,7 @@ router.post(
   authMiddleware,
   guideController.addDetails
 );
-router.post(
+router.post(   
   "/editprofile",
   upload.upload.single("image"),
   authMiddleware,

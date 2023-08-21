@@ -1,12 +1,23 @@
 const Admin = require("../model/adminModel");
 const Guide = require("../model/guideModel");
 const GuideDetails = require("../model/guideDetailsModel");
-const Orders=require('../model/orderModel')
+const Banner = require("../model/bannerModel");
+const Orders = require("../model/orderModel");
 const Guest = require("../model/guestModel");
+const Guestbanner=require('../model/guestbannerModel')
 const bcrypt = require("bcryptjs");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const Location = require("../model/locationModel");
+const sharp = require("sharp");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.cloud_name,
+  api_key: process.env.api_key,
+  api_secret: process.env.api_secret,
+  secure: true,
+});
 
 const adminLogin = async (req, res) => {
   try {
@@ -234,21 +245,104 @@ const blockGuest = async (req, res) => {
     console.log(error);
   }
 };
-const getOrders=async(req,res)=>{
- try {
-  const orders=await Orders.find({})
-  if(orders){
-    res.status(200).send({data:orders,success:true})
-  }else{
-    res.status(200).message({message:"there is no order",success:false})
+const getOrders = async (req, res) => {
+  try {
+    const orders = await Orders.find({});
+    if (orders) {
+      res.status(200).send({ data: orders, success: true });
+    } else {
+      res.status(200).message({ message: "there is no order", success: false });
+    }
+  } catch (error) {
+    res.status(500).send({ error });
   }
- } catch (error) {
-  res.status(500).send({error})
-  
- }
+};
+const addBanner = async (req, res) => {
+  console.log("ENTERED");
 
+  if (!req.file) {
+    const updates = await Banner.updateOne({
+      $set: { heading: req.body.heading, description: req.body.description },
+    });
+    if (updates) {
+      return res.status(200).send({ message: "banner edited", success: true });
+    }
+  }
+  try {
+    const already = await Banner.findOne({});
+    if (already) {
+      const deleteban = await Banner.findOneAndDelete({});
+    }
+    const image = req.file.filename;
+    await sharp("./uploads/guideId/" + image)
+      .resize(1000, 1000)
+      .toFile("./uploads/GuideID2/" + image);
+    const data = await cloudinary.uploader.upload(
+      "./uploads/GuideID2/" + image
+    );
+    const cdnUrl = data.secure_url;
+    const banner = new Banner({
+      guidebanner: cdnUrl,
+      heading: req.body.heading,
+      description: req.body.description,
+    });
+    const saved = await banner.save();
+    if (saved) {
+      res.status(200).send({ message: "banner updated", success: true });
+    } else {
+      res.status(200).send({ message: "Please try again", success: false });
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+const getBanner = async (req, res) => {
+  try {
+    const banner = await Banner.find({});
+    const guestbanner=await Guestbanner.find({})
+    if (banner&&guestbanner) {
+      res.status(200).send({ data: banner,data2:guestbanner, success: true });
+    }
+  } catch (error) {
+    res.status(500).send({ error });
+  }
+};
+const addGuestBanner = async (req, res) => {
+  const image = [];
+  for (let j = 0; j < req.files.length; j++) {
+    image.push(req.files[j].filename);
+  }
+  try {
+      await sharp("./uploads/guideId/" + image[0])
+        .resize(1000, 1000)
+        .toFile("./uploads/GuideID2/" + image[0]);
+      const data = await cloudinary.uploader.upload(
+        "./uploads/GuideID2/" + image[0]
+      );
+      const already=await Guestbanner.findOne({})
+      if(already){
+        const deletes=await Guestbanner.deleteOne({})
+      }
+      
+      const cdnUrl = data.secure_url
 
-}
+      
+      const banner=new Guestbanner({
+        image:cdnUrl,
+        description:req.body.description,
+        heading:req.body.heading
+      })
+
+      const savedbanner=await banner.save()
+      console.log(savedbanner)
+      res.status(200).send({message:"Guest banner updated",success:true})
+        
+      
+    
+  } catch (error) {
+    res.status(500).send({error})
+  }
+};
 module.exports = {
   adminLogin,
   getAdmin,
@@ -261,5 +355,8 @@ module.exports = {
   blockGuide,
   getGuest,
   blockGuest,
-  getOrders
+  getOrders,
+  addBanner,
+  getBanner,
+  addGuestBanner,
 };

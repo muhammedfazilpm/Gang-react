@@ -30,18 +30,20 @@ const io = new Server(server, {
 const port = process.env.PORT || 5000;
 
 io.on("connect", (socket) => {
-    console.log("User connected:", socket.id);
+    // console.log("User connected:", socket.id);
     socket.on("join-room",(data)=>{
+        
         socket.join(data)
-        console.log(`user with id :${socket.id} joined room:${data}`)
+        // console.log(`user with id :${socket.id} joined room:${data}`)
     })
     socket.on("send_message",(data)=>{
+        
         socket.to(data.room).emit("recive_message",data)
-        console.log(data)
+        // console.log(data)
     })
 
     socket.on("disconnect", () => {
-        console.log("User disconnected:", socket.id);
+        // console.log("User disconnected:", socket.id);
     });
 });
 

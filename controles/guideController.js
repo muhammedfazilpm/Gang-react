@@ -2,6 +2,7 @@ const Guide = require("../model/guideModel");
 const Location = require("../model/locationModel");
 const Details = require("../model/guideDetailsModel");
 const Orders=require("../model/orderModel")
+const Banner=require("../model/bannerModel")
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
@@ -175,13 +176,14 @@ const getUser = async (req, res) => {
         .status(200)
         .send({ message: "user does not exist", success: false });
     } else {
+      const banner=await Banner.findOne({})
       res.status(200).send({
         message: "user found",
         success: true,
         data: {
           name: guide.name,
           email: guide.email,
-        },
+        },banner:banner
       });
     }
   } catch (error) {
