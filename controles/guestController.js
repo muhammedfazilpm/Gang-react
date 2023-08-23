@@ -2,6 +2,7 @@ const Guest = require("../model/guestModel");
 const Location = require("../model/locationModel");
 const Guidedetails = require("../model/guideDetailsModel");
 const Order = require("../model/orderModel");
+const Guestbanner=require('../model/guestbannerModel')
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const Razorpay=require('razorpay')
@@ -163,7 +164,7 @@ const login = async (req, res) => {
   }
 };
 const getUser = async (req, res) => {
-  console.log(req.body.guest);
+  
   try {
     const guest = await Guest.findOne({ _id: req.body.guest });
 
@@ -172,13 +173,16 @@ const getUser = async (req, res) => {
         .status(200)
         .send({ message: "user does not exist", success: false });
     } else {
+      const banner=await Guestbanner.find({})
       res.status(200).send({
+
         message: "user found",
         success: true,
         data: {
           name: guest.name,
           email: guest.email,
         },
+        data2:banner
       });
     }
   } catch (error) {
@@ -277,8 +281,16 @@ const saveDetails = async (req, res) => {
   }
 };
 const bookDeal = async (req, res) => {
+  console.log()
  const guide=req.body.data
  const date=req.body.formData.date
+ const date2=new Date(date)
+ const today = new Date();
+console.log(today);
+
+//  if(date2<=today){
+//   return res.status(200).send({message:"Please check the selected date",success:false})
+//  }
  const guides=await Guidedetails.findOne({guidid:guide})
  const guest =await Guest.findOne({_id:req.body.guest})
  const sameBooking=await Order.findOne({guideid:guide,dateofbook:date})
@@ -286,6 +298,7 @@ const bookDeal = async (req, res) => {
       return res.status(200).send({message:"The guide has a booking ",success:false})
      }
   try {
+    
     const order = new Order({
       guestid: req.body.guest,
       guest:guest.name,
