@@ -1,8 +1,8 @@
 const Guide = require("../model/guideModel");
 const Location = require("../model/locationModel");
 const Details = require("../model/guideDetailsModel");
-const Orders=require("../model/orderModel")
-const Banner=require("../model/bannerModel")
+const Orders = require("../model/orderModel");
+const Banner = require("../model/bannerModel");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
@@ -176,14 +176,15 @@ const getUser = async (req, res) => {
         .status(200)
         .send({ message: "user does not exist", success: false });
     } else {
-      const banner=await Banner.findOne({})
+      const banner = await Banner.findOne({});
       res.status(200).send({
         message: "user found",
         success: true,
         data: {
           name: guide.name,
           email: guide.email,
-        },banner:banner
+        },
+        banner: banner,
       });
     }
   } catch (error) {
@@ -290,12 +291,10 @@ const addDetails = async (req, res) => {
     const detailss = await Details.findOne({ guidid: req.body.guide });
 
     if (detailss) {
-      return res
-        .status(200)
-        .send({
-          message: "already added please wait for admin confirmation",
-          success: false,
-        });
+      return res.status(200).send({
+        message: "already added please wait for admin confirmation",
+        success: false,
+      });
     }
     const advance = req.body.amount * 0.25;
 
@@ -318,8 +317,13 @@ const addDetails = async (req, res) => {
 };
 
 const editProfile = async (req, res) => {
+  console.log("ENTER");
   try {
+    if (!req.file.filename) {
+      res.status(200).send({ message: "Check the image", success: false });
+    }
     const image = req.file.filename;
+
     await sharp("./uploads/guideId/" + image)
       .resize(1000, 1000)
       .toFile("./uploads/GuideID2/" + image);
@@ -327,76 +331,114 @@ const editProfile = async (req, res) => {
       "./uploads/GuideID2/" + image
     );
     const cdnUrl = data.secure_url;
-    if (!req.body.amount) {
+    if ((!req.body.amount && !req.body.phone && !req.body.name, !cdnUrl)) {
       return res
         .status(200)
-        .send({ message: "Please fill the form", success: false });
+        .send({ message: "please edit the form", success: false });
     }
-    const advance = req.body.amount * 0.25;
-    const details = await Details.findOneAndUpdate(
-      { guidid: req.body.guide },
-      { $set: { amount: req.body.amount, advance: advance } }
-    );
-
-    if (req.body.name.length == 0) {
-      const guide = await Guide.findOneAndUpdate(
-        { _id: req.body.guide },
-        { $set: { phone: req.body.phone, profile: cdnUrl } }
-      );
-      if (guide) {
-        res.status(200).send({ message: "Profile updated", success: true });
-      } else {
-        res.status(200).send({ message: "" });
-      }
-    } else if (req.body.phone.length == 0) {
-      const guide = await Guide.findOneAndUpdate(
-        { _id: req.body.guide },
-        { $set: { name: req.body.name, profile: cdnUrl } }
-      );
-      if (guide) {
-        res.status(200).send({ message: "Profile updated", success: true });
-      } else {
-        res.status(200).send({ message: "check the etails" });
-      }
-    } else if (req.body.name.lenth == 0 && req.body.phone.length == 0) {
+    if (!req.body.amount && !req.body.phone && !req.body.name) {
       const guide = await Guide.findOneAndUpdate(
         { _id: req.body.guide },
         { $set: { profile: cdnUrl } }
       );
-      if (guide) {
-        res.status(200).send({ message: "Profile updated", success: true });
-      } else {
-        res.status(200).send({ message: "check the details" });
-      }
-    } else {
+    }
+
+    if (req.body.amount && req.body.phone && req.body.name) {
+      const advance = req.body.amount * 0.25;
+      const details = await Details.findOneAndUpdate(
+        { guidid: req.body.guide },
+        { $set: { amount: req.body.amount, advance: advance } }
+      );
       const guide = await Guide.findOneAndUpdate(
         { _id: req.body.guide },
         {
-          $set: { name: req.body.name, phone: req.body.phone, profile: cdnUrl },
+          $set: { phone: req.body.phone, name: req.body.name, profile: cdnUrl },
         }
       );
+      return res
+        .status(200)
+        .send({ message: "Profile updated", success: true });
+    }
+    if (!req.body.amount) {
+      if (!req.body.name && !req.body.phone) {
+        const guide = await Guide.findOneAndUpdate(
+          { _id: req.body.guide },
+          { $set: { phone: req.body.phone, profile: cdnUrl } }
+        );
+        return res
+          .status(200)
+          .send({ message: "Profile updated", success: true });
+      } else if (!req.body.phone) {
+        const guide = await Guide.findOneAndUpdate(
+          { _id: req.body.guide },
+          { $set: { name: req.body.name, profile: cdnUrl } }
+        );
+        return res
+          .status(200)
+          .send({ message: "Profile updated", success: true });
+      } else {
+        const guide = await Guide.findOneAndUpdate(
+          { _id: req.body.guide },
+          {
+            $set: {
+              name: req.body.name,
+              phone: req.body.phone,
+              profile: cdnUrl,
+            },
+          }
+        );
+        return res
+          .status(200)
+          .send({ message: "Profile updated", success: true });
+      }
+    } else {
+      const advance = req.body.amount * 0.25;
+      if (!req.body.name) {
+        const guide = await Guide.findOneAndUpdate(
+          { _id: req.body.guide },
+          { $set: { phone: req.body.phone, profile: cdnUrl } }
+        );
+        const details = await Details.findOneAndUpdate(
+          { guidid: req.body.guide },
+          { $set: { amount: req.body.amount, advance: advance } }
+        );
+
+        return res
+          .status(200)
+          .send({ message: "Profile updated", success: true });
+      } else if (!req.body.phone) {
+        const guide = await Guide.findOneAndUpdate(
+          { _id: req.body.guide },
+          { $set: { name: req.body.name, profile: cdnUrl } }
+        );
+        const details = await Details.findOneAndUpdate(
+          { guidid: req.body.guide },
+          { $set: { amount: req.body.amount, advance: advance } }
+        );
+        return res
+          .status(200)
+          .send({ message: "Profile updated", success: true });
+      }
     }
   } catch (error) {
     res.status(500).send({ message: "Something went wrong" });
   }
 };
 
-const getOrder=async(req,res)=>{
-  console.log("enters")
+const getOrder = async (req, res) => {
+  console.log("enters");
   try {
-    console.log(req.body.guide)
-    const order=await Orders.find({guideid:req.body.guide})
-    if(order){
-      res.status(200).send({data:order,success:true})
-    }else{
-      res.status(200).send({message:"no oreder found"})
+    console.log(req.body.guide);
+    const order = await Orders.find({ guideid: req.body.guide });
+    if (order) {
+      res.status(200).send({ data: order, success: true });
+    } else {
+      res.status(200).send({ message: "no oreder found" });
     }
-    
   } catch (error) {
-    res.status(500).send({error})
+    res.status(500).send({ error });
   }
-
-}
+};
 
 module.exports = {
   GuideRegitration,
@@ -409,5 +451,5 @@ module.exports = {
   getLocation,
   addDetails,
   editProfile,
-  getOrder
+  getOrder,
 };
