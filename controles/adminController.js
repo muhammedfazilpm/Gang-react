@@ -4,11 +4,14 @@ const GuideDetails = require("../model/guideDetailsModel");
 const Banner = require("../model/bannerModel");
 const Orders = require("../model/orderModel");
 const Guest = require("../model/guestModel");
+const Review=require('../model/ratingModel')
 const Guestbanner=require('../model/guestbannerModel')
 const bcrypt = require("bcryptjs");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const Location = require("../model/locationModel");
+const guideController=require('../controles/guideController')
+const averagerating=guideController.averagerating
 const sharp = require("sharp");
 const cloudinary = require("cloudinary").v2;
 
@@ -147,8 +150,11 @@ const getGuide = async (req, res) => {
 const guideDetails = async (req, res) => {
   try {
     const details = await GuideDetails.findOne({ guidid: req.body.id });
+    const reviews =await Review.find({guideid:req.body.id})
+    const average=   averagerating(reviews)
+    
 
-    res.status(200).send({ data: details });
+    res.status(200).send({ data: details,reviews:reviews,average:average});
   } catch (error) {
     res.status(500).send(error);
   }

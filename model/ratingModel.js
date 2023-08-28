@@ -4,6 +4,10 @@ const ratingSchema=mongoose.Schema({
         type:String,
         required:true
     },
+    guestid:{
+        type:String,
+        required:true
+    },
     guestname:{
         type:String,
         required:true
@@ -20,6 +24,9 @@ const ratingSchema=mongoose.Schema({
         type:String,
     
     }
+},{
+    timestamps:true
+    
 })
 
 const ratingModel=mongoose.model("rating",ratingSchema)

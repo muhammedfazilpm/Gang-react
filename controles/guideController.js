@@ -3,6 +3,7 @@ const Location = require("../model/locationModel");
 const Details = require("../model/guideDetailsModel");
 const Orders = require("../model/orderModel");
 const Banner = require("../model/bannerModel");
+const Review =require('../model/ratingModel')
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
@@ -245,13 +246,25 @@ const resetOtp = async (req, res) => {
     console.log(error);
   }
 };
+const averagerating=(review)=>{
+  const totalrating =review.map(item=>item.rating).reduce((acc,rating)=>acc+rating,0)
+    const length=review.length
+    const avgrating=totalrating/length
+    const roundedNumber = Math.round(avgrating * 2) / 2;
+    return roundedNumber
+}
 
 const getProfile = async (req, res) => {
   try {
     const guideProfile = await Guide.findById(req.body.guide);
     const guidedetails = await Details.findOne({ guidid: req.body.guide });
+    
+   const reviews=await Review.find({guideid:req.body.guide})
+  
+   const average=averagerating(reviews)
+  
 
-    res.status(200).send({ data: guideProfile, details: guidedetails });
+    res.status(200).send({ data: guideProfile, details: guidedetails,reviews:reviews,average:average});
   } catch (error) {}
 };
 
@@ -487,5 +500,6 @@ module.exports = {
   editProfile,
   getOrder,
   sendComplete,
-  checkCode
+  checkCode,
+  averagerating
 };

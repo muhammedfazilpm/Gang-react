@@ -356,24 +356,69 @@ const submitReview=async(req,res)=>{
  try {
  const Oreders=await Order.findOne({_id:req.body.data})
  const guest=await Guest.findOne({_id:Oreders.guestid})
+const exist=await Rating.findOne({guideid:Oreders.guideid,guestid:Oreders.guestid})
+console.log("exist",exist)
+if(exist){
+  const update = await Rating.findOneAndUpdate(
+    { guideid: Oreders.guideid, guestid: Oreders.guestid },
+    {
+      $set: {
+        review: req.body.review,
+        rating: req.body.rating,
+      },
+    },
+    { new: true }
+  );
+  
+console.log(update)
+  if (update) {
+    return res.status(200).send({message:"review upated",success:true})
+
+  }
+}
  const guestname=guest.name
  const rating=new Rating({
   guideid:Oreders.guideid,
   guestname:guestname,
   review:req.body.review,
-  rating:req.body.rating
+  rating:req.body.rating,
+  guestid:Oreders.guestid
  })
  const saved=await rating.save()
- console.log("save",saved)
  if(saved){
   
-  res.status(200).send({message:"review upated",success:true})
- }else{
-  res.status(200).send({message:"Please try again",success:false})
+ return res.status(200).send({message:"review upated",success:true})
+ }else{ 
+ return  res.status(200).send({message:"Please try again",success:false})
  }
  } catch (error) {
+  console.log("error")
   res.status(500).send({error})
  }
+}
+const averagerating=(review)=>{
+  const totalrating =review.map(item=>item.rating).reduce((acc,rating)=>acc+rating,0)
+    const length=review.length
+    const avgrating=totalrating/length
+    const roundedNumber = Math.round(avgrating * 2) / 2;
+    return roundedNumber
+}
+const getReview=async(req,res)=>{
+
+  try {
+    const review=await Rating.find({guideid:req.body.id})
+    const avgrating=averagerating(review)
+    
+    if(review){
+      res.status(200).send({success:true,data:review,rate:avgrating})
+    }
+    else{
+      res.status(200).send({success:false})
+    }
+    
+  } catch (error) {
+    res.status(500).send(error)
+  }
 }
 module.exports = {
   registeration,
@@ -388,5 +433,6 @@ module.exports = {
   bookDeal,
   paymentUpdate,
   getOrders,
-  submitReview
+  submitReview,
+  getReview
 };
