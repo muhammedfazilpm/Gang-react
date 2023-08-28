@@ -14,6 +14,8 @@ guestroutes.post("/order", authMiddlewareguest, guestController.postOrder);
 guestroutes.post("/sendDetails", guestController.saveDetails);
 guestroutes.post("/bookorder", authMiddlewareguest, guestController.bookDeal);
 guestroutes.post("/paymentUpdate", guestController.paymentUpdate);
+guestroutes.post("/submitReview", guestController.submitReview);
+
 guestroutes.post("/getOrders", authMiddlewareguest, guestController.getOrders);
 
 

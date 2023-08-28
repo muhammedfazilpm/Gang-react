@@ -439,6 +439,40 @@ const getOrder = async (req, res) => {
     res.status(500).send({ error });
   }
 };
+const sendComplete=async(req,res)=>{
+  
+try {
+  const random = Math.floor(Math.random() * 9000) + 1000;
+  const updated=await Orders.findOneAndUpdate({_id:req.body.id},{$set:{completeCode:random}},{new:true})
+  if(updated){
+    res.status(200).send({message:'code send to guest',success:true,data:updated._id})
+  }else{
+    res.status(200).send({message:"try again",success:false})
+  }
+  
+} catch (error) {
+  req.status(500).send({message:"try again"})
+}
+  
+}
+const checkCode=async(req,res)=>{
+  try {
+    const findOrder=await Orders.findOne({_id:req.body.data})
+   
+    if(findOrder.completeCode==req.body.otp){
+      const codeUpdate=await Orders.findOneAndUpdate({_id:req.body.data},{$set:{completeCode:null,orderStatus:"Completed"}},{new:true})
+      console.log(codeUpdate)
+      
+      res.status(200).send({message:"orderCompleted",success:true})
+    }
+    else{
+      res.status(200).send({message:"Enter the correct otp",success:false})
+    }
+  } catch (error) {
+    res.status(500).send({message:"try again"})
+    
+  }
+}
 
 module.exports = {
   GuideRegitration,
@@ -452,4 +486,6 @@ module.exports = {
   addDetails,
   editProfile,
   getOrder,
+  sendComplete,
+  checkCode
 };

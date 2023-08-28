@@ -45,6 +45,13 @@ const ordeSchema =mongoose.Schema({
         type:String,
         default:0
      },
+     orderStatus:{
+        type:String,
+        default:"Not completed"
+     },
+     completeCode:{
+        type:Number
+     }
 },{
     timestamps:true
 })

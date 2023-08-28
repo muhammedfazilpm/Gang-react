@@ -2,6 +2,7 @@ const Guest = require("../model/guestModel");
 const Location = require("../model/locationModel");
 const Guidedetails = require("../model/guideDetailsModel");
 const Order = require("../model/orderModel");
+const Rating=require('../model/ratingModel')
 const Guestbanner=require('../model/guestbannerModel')
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
@@ -9,6 +10,7 @@ const Razorpay=require('razorpay')
 require("dotenv").config();
 
 const jwt = require("jsonwebtoken");
+const { triggerAsyncId } = require("async_hooks");
 
 var instance = new Razorpay({
   key_id: process.env.key_id,
@@ -286,14 +288,9 @@ const bookDeal = async (req, res) => {
  const date=req.body.formData.date
  const date2=new Date(date)
  const today = new Date();
-console.log(today);
-
-//  if(date2<=today){
-//   return res.status(200).send({message:"Please check the selected date",success:false})
-//  }
  const guides=await Guidedetails.findOne({guidid:guide})
  const guest =await Guest.findOne({_id:req.body.guest})
- const sameBooking=await Order.findOne({guideid:guide,dateofbook:date})
+ const sameBooking=await Order.findOne({guideid:guide,dateofbook:date,paymentstatus:!"pending"})
      if(sameBooking){
       return res.status(200).send({message:"The guide has a booking ",success:false})
      }
@@ -329,7 +326,7 @@ const paymentUpdate=async(req,res)=>{
   const paymentid=req.body.payment.razorpay_payment_id
   console.log(paymentid)
   try {
-    const updateOrder=await Order.findOneAndUpdate({_id:id},{$set:{paymentstatus:"paid",paymentid:paymentid}})
+    const updateOrder=await Order.findOneAndUpdate({_id:id},{$set:{paymentstatus:"Paid",paymentid:paymentid}})
    
      if(updateOrder){
       res.status(200).send({message:"Payment success full",success:true})
@@ -355,6 +352,29 @@ const getOrders=async(req,res)=>{
       res.status(500).send({error})
     }
 }
+const submitReview=async(req,res)=>{
+ try {
+ const Oreders=await Order.findOne({_id:req.body.data})
+ const guest=await Guest.findOne({_id:Oreders.guestid})
+ const guestname=guest.name
+ const rating=new Rating({
+  guideid:Oreders.guideid,
+  guestname:guestname,
+  review:req.body.review,
+  rating:req.body.rating
+ })
+ const saved=await rating.save()
+ console.log("save",saved)
+ if(saved){
+  
+  res.status(200).send({message:"review upated",success:true})
+ }else{
+  res.status(200).send({message:"Please try again",success:false})
+ }
+ } catch (error) {
+  res.status(500).send({error})
+ }
+}
 module.exports = {
   registeration,
   otpVerify,
@@ -367,5 +387,6 @@ module.exports = {
   saveDetails,
   bookDeal,
   paymentUpdate,
-  getOrders
+  getOrders,
+  submitReview
 };
