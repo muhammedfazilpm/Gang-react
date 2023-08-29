@@ -62,8 +62,20 @@ const adminLogin = async (req, res) => {
 };
 
 const getAdmin = async (req, res) => {
+
+ 
   try {
     const admin = await Admin.findOne({ _id: req.body.admin });
+    const order=await Orders.find({})
+    const guidecount=await Guide.countDocuments({})
+    const guestcount=await Guest.countDocuments({})
+    const ordercount=await Orders.countDocuments({})
+    const totalavance=await Orders.aggregate([{$group:{_id:null,total:{$sum:'$advance'}}}])
+    const advavancetotal=totalavance[0].total
+    const mostorderplace=await Orders.aggregate([{$group:{_id:"$location",count:  {$sum:1}}}])
+    const firstplace=mostorderplace[0]._id
+    const firstplacecount=mostorderplace[0].count
+
 
     if (!admin) {
       return res
@@ -72,7 +84,7 @@ const getAdmin = async (req, res) => {
     } else {
       res
         .status(200)
-        .send({ message: "welome to home", success: true, data: admin.email });
+        .send({ message: "welome to home", success: true, data: admin.email,guidecount,guestcount,ordercount,advavancetotal,firstplace,firstplacecount,order });
     }
   } catch (error) {
     res

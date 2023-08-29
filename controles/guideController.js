@@ -443,6 +443,7 @@ const getOrder = async (req, res) => {
   try {
     console.log(req.body.guide);
     const order = await Orders.find({ guideid: req.body.guide });
+    console.log(order)
     if (order) {
       res.status(200).send({ data: order, success: true });
     } else {
@@ -486,6 +487,26 @@ const checkCode=async(req,res)=>{
     
   }
 }
+const getorders=async(req,res)=>{
+  try {
+    const orders=await Orders.find({guideid:req.body.guide})
+    
+    const ordercount=orders.length
+    const completed=orders.filter(order=>order.orderStatus=="Completed").length
+    const totalamount=orders.filter(order=>order.orderStatus=='Completed').reduce((total,order)=>total+order.amount,0)
+
+    if(orders){
+      res.status(200).send({success:true,ordercount,completed,totalamount,orders})
+    }
+    else{
+      res.status(200).send({success:false})
+    }
+
+  } catch (error) {
+    res.status(500).send(error)
+    
+  }
+}
 
 module.exports = {
   GuideRegitration,
@@ -501,5 +522,6 @@ module.exports = {
   getOrder,
   sendComplete,
   checkCode,
-  averagerating
+  averagerating,
+  getorders
 };
