@@ -439,11 +439,11 @@ const editProfile = async (req, res) => {
 };
 
 const getOrder = async (req, res) => {
-  console.log("enters");
+
   try {
-    console.log(req.body.guide);
+    
     const order = await Orders.find({ guideid: req.body.guide });
-    console.log(order)
+  
     if (order) {
       res.status(200).send({ data: order, success: true });
     } else {
@@ -475,7 +475,7 @@ const checkCode=async(req,res)=>{
    
     if(findOrder.completeCode==req.body.otp){
       const codeUpdate=await Orders.findOneAndUpdate({_id:req.body.data},{$set:{completeCode:null,orderStatus:"Completed"}},{new:true})
-      console.log(codeUpdate)
+      
       
       res.status(200).send({message:"orderCompleted",success:true})
     }
@@ -507,6 +507,14 @@ const getorders=async(req,res)=>{
     
   }
 }
+const getsenderId=async(req,res)=>{
+  try {
+    res.status(200).send({id:req.body.guide,success:true})
+    
+  } catch (error) {
+    
+  }
+}
 
 module.exports = {
   GuideRegitration,
@@ -523,5 +531,6 @@ module.exports = {
   sendComplete,
   checkCode,
   averagerating,
-  getorders
+  getorders,
+  getsenderId
 };

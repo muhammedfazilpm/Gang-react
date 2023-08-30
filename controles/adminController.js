@@ -31,7 +31,6 @@ const adminLogin = async (req, res) => {
     // console.log(hashPassword)
     // req.body.password = hashPassword;
     const admin = await Admin.findOne({ email: req.body.email });
-    console.log(admin);
 
     if (!admin) {
       return res
@@ -99,7 +98,6 @@ const addlocation = async (req, res) => {
     const state = await Location.findOne({
       state: { $regex: new RegExp("^" + req.body.state, "i") },
     });
-    console.log("1", state);
 
     if (state) {
       const district = await Location.findOne({
@@ -109,8 +107,7 @@ const addlocation = async (req, res) => {
         },
       });
 
-      console.log("dis", district);
-      console.log(req.body.district);
+
 
       if (district) {
         return res
@@ -139,12 +136,12 @@ const addlocation = async (req, res) => {
 const getLocation = async (req, res) => {
   try {
     const location = await Location.find();
-    console.log("hi" + location);
+    
     let a = [];
     for (let i = 0; i < 2; i++) {
       a[i] = location[i].state;
     }
-    console.log(a);
+  
     res.status(200).send({ success: true, data: location });
   } catch (error) {}
 };
@@ -173,9 +170,9 @@ const guideDetails = async (req, res) => {
 };
 
 const changeStatus = async (req, res) => {
-  console.log("hieb");
+
   try {
-    console.log("hello");
+  
     const update = await Guide.findOneAndUpdate(
       { _id: req.body.id },
       { $set: { isAdminverified: true } }
@@ -191,7 +188,7 @@ const changeStatus = async (req, res) => {
 };
 const editLocation = async (req, res) => {
   const district = req.body.districts;
-  console.log("district", district);
+  
   try {
     const location = await Location.findOneAndUpdate(
       { _id: req.body.id },
@@ -208,18 +205,18 @@ const editLocation = async (req, res) => {
 };
 const blockGuide = async (req, res) => {
   try {
-    console.log(req.body.id);
+  
     const a = req.body.id.toString();
-    console.log(a);
+
     const guide = await Guide.findOne({ _id: req.body.id });
     const updateguide = await Guide.findOneAndUpdate(
       { _id: req.body.id },
       { $set: { isBlocked: !guide.isBlocked } },
       { new: true }
     );
-    console.log(updateguide);
+    
     if (updateguide) {
-      console.log("b");
+    
       return res
         .status(200)
         .send({ message: "Updated the block status", success: true });
@@ -235,7 +232,7 @@ const blockGuide = async (req, res) => {
 
 const getGuest = async (req, res) => {
   try {
-    console.log("guest root");
+    
     const guest = await Guest.find({});
     if (guest) {
       res.status(200).send({ data: guest, success: true });
@@ -276,7 +273,7 @@ const getOrders = async (req, res) => {
   }
 };
 const addBanner = async (req, res) => {
-  console.log("ENTERED");
+  
 
   if (!req.file) {
     const updates = await Banner.updateOne({
@@ -352,7 +349,7 @@ const addGuestBanner = async (req, res) => {
       })
 
       const savedbanner=await banner.save()
-      console.log(savedbanner)
+    
       res.status(200).send({message:"Guest banner updated",success:true})
         
       

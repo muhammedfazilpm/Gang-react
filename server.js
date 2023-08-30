@@ -31,7 +31,7 @@ const io = new Server(server, {
 const port = process.env.PORT || 5000;
 
 io.on("connect", (socket) => {
-    // console.log("User connected:", socket.id);
+    // console.log("User connected:");
     socket.on("join-room",(data)=>{
         
         socket.join(data)
@@ -42,9 +42,7 @@ io.on("connect", (socket) => {
         io.to(data.room).emit("receive_message", data);        
     })
 
-    // socket.on("disconnect", () => {
-    //     console.log("User disconnected:", socket.id);
-    // });
+    
 });
 
 server.listen(port, () => console.log(`Server started at ${port}`));

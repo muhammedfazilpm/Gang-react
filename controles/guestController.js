@@ -420,6 +420,15 @@ const getReview=async(req,res)=>{
     res.status(500).send(error)
   }
 }
+const getsenderId=async(req,res)=>{
+  try {
+    res.status(200).send({id:req.body.guest.id,success:true})
+    
+  } catch (error) {
+    
+  }
+
+}
 module.exports = {
   registeration,
   otpVerify,
@@ -434,5 +443,6 @@ module.exports = {
   paymentUpdate,
   getOrders,
   submitReview,
-  getReview
+  getReview,
+  getsenderId
 };
