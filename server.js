@@ -1,6 +1,7 @@
 const express = require("express");
 const http = require('http');
 const { Server } = require('socket.io');
+const guideController = require("./controles/guideController");
 const cors = require('cors');
 
 const app = express();
@@ -13,7 +14,9 @@ const guideRoutes = require("./routes/guideRoutes");
 const guestRoutes = require('./routes/guestRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
-app.use(cors());
+app.use(cors(
+    
+));
 app.use(express.json());
 
 app.use("/api/guide/", guideRoutes);
@@ -37,9 +40,12 @@ io.on("connect", (socket) => {
         socket.join(data)
         console.log(`user with id :${socket.id} joined room:${data}`)
     })
-    socket.on("send_message",(data)=>{
-        console.log(data)
-        io.to(data.room).emit("receive_message", data);        
+    socket.on("send_message",async(data)=>{
+        
+        io.to(data.room).emit("receive_message", data);
+        const {room,author,message}=data
+        console.log("here for chat ",data)
+             await   guideController.chatHistory(room,message,author)
     })
 
     

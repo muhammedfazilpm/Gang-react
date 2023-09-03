@@ -20,6 +20,8 @@ guestroutes.post("/getReview", guestController.getReview);
 
 guestroutes.post("/getOrders", authMiddlewareguest, guestController.getOrders);
 guestroutes.post("/getguestId", authMiddlewareguest, guestController.getsenderId);
+guestroutes.post("/getchathistory", guestController.getChat);
+
 
 
 

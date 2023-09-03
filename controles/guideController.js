@@ -4,6 +4,7 @@ const Details = require("../model/guideDetailsModel");
 const Orders = require("../model/orderModel");
 const Banner = require("../model/bannerModel");
 const Review =require('../model/ratingModel')
+const Chat=require('../model/chatModel')
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
@@ -515,6 +516,51 @@ const getsenderId=async(req,res)=>{
     
   }
 }
+const chatHistory=async(room,message,author)=>{
+
+  const roomexist=await Chat.findOne({chatRoom:room})
+  console.log("room nd")
+
+  if(roomexist){
+  const chat=  await Chat.findOne(({chatRoom:room}))
+    const id=chat._id
+    const chatUpdate = await Chat.findByIdAndUpdate(
+      id, // Replace 'id' with the actual _id of the document you want to update
+      {
+        $push: {
+          chathistory: {
+            author: author,
+            message: message,
+            time: new Date(),
+          },
+        },
+      },
+      { new: true }
+    );
+    
+  }
+  else{
+    const savechat=new Chat({
+      chatRoom:room,
+      chathistory:[
+        {
+          author:author,
+          message:message,
+          time:new Date()
+        }
+      ]
+    })
+    await savechat.save()
+
+  }
+}
+const getChat=async(req,res)=>{
+ const chathistory= await Chat.findOne({chatRoom:req.body.id})
+ const chat=chathistory?.chathistory
+ if(chathistory){
+  res.status(200).send({ chat,success:true})
+ }
+}
 
 module.exports = {
   GuideRegitration,
@@ -532,5 +578,7 @@ module.exports = {
   checkCode,
   averagerating,
   getorders,
-  getsenderId
+  getsenderId,
+  chatHistory,
+  getChat
 };

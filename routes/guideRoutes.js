@@ -32,6 +32,8 @@ router.post("/sendcomplete",  guideController.sendComplete);
 router.post("/checkcode",  guideController.checkCode);
 router.post("/getorders", authMiddleware, guideController.getorders);
 router.post("/getsenderId", authMiddleware, guideController.getsenderId);
+router.post("/chathistory", guideController.getChat);
+
 
 
 

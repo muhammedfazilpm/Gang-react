@@ -3,6 +3,7 @@ const Location = require("../model/locationModel");
 const Guidedetails = require("../model/guideDetailsModel");
 const Order = require("../model/orderModel");
 const Rating=require('../model/ratingModel')
+const Chat=require('../model/chatModel')
 const Guestbanner=require('../model/guestbannerModel')
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
@@ -429,6 +430,22 @@ const getsenderId=async(req,res)=>{
   }
 
 }
+const getChat= async (req,res)=>{
+  console.log("rooms",req.body.data.id)
+  console.log("author",req.body.data.userid)
+  
+  try {
+  const chathistory= await Chat.findOne({chatRoom:req.body.data.id})
+ const chat=chathistory?.chathistory
+ if(chathistory){
+  res.status(200).send({ chat,success:true})
+ }
+    
+  } catch (error) {
+    
+  }
+
+}
 module.exports = {
   registeration,
   otpVerify,
@@ -444,5 +461,6 @@ module.exports = {
   getOrders,
   submitReview,
   getReview,
-  getsenderId
+  getsenderId,
+  getChat
 };
