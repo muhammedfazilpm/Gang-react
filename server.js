@@ -14,13 +14,13 @@ const guideRoutes = require("./routes/guideRoutes");
 const guestRoutes = require('./routes/guestRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
-app.use(cors({
-    credentials:true,
-    origin:['https://reliable-meerkat-9e3d51.netlify.app/']
-}
+    app.use(cors({
+        credentials:true,
+        origin:['*']
+    }
 
-    
-));
+        
+    ));
 app.use(express.json());
 
 app.use("/api/guide/", guideRoutes);
@@ -30,7 +30,7 @@ app.use('/api/admin/', adminRoutes);
 const io = new Server(server, {
     cors: {
         
-        origin: "http://localhost:3000",
+        origin: "*",
         methods: ["GET", "POST"]
     },
 });
