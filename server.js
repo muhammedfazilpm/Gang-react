@@ -16,7 +16,7 @@ const adminRoutes = require('./routes/adminRoutes');
 
 app.use(cors({
     credentials:true,
-    origin:['https://64f74bb3fe44351b54f7b683--endearing-raindrop-d392b6.netlify.app/']
+    origin:['https://reliable-meerkat-9e3d51.netlify.app/']
 }
 
     
