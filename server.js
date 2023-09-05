@@ -14,7 +14,11 @@ const guideRoutes = require("./routes/guideRoutes");
 const guestRoutes = require('./routes/guestRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
-app.use(cors(
+app.use(cors({
+    credentials:true,
+    origin:['http://localhost:3000']
+}
+
     
 ));
 app.use(express.json());
@@ -30,6 +34,7 @@ const io = new Server(server, {
         methods: ["GET", "POST"]
     },
 });
+
 
 const port = process.env.PORT || 5000;
 

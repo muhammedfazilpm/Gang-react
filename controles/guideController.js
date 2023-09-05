@@ -5,12 +5,14 @@ const Orders = require("../model/orderModel");
 const Banner = require("../model/bannerModel");
 const Review =require('../model/ratingModel')
 const Chat=require('../model/chatModel')
+const Guest=require('../model/guestModel')
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const sharp = require("sharp");
 const cloudinary = require("cloudinary").v2;
+
 
 cloudinary.config({
   cloud_name: process.env.cloud_name,
@@ -555,10 +557,17 @@ const chatHistory=async(room,message,author)=>{
   }
 }
 const getChat=async(req,res)=>{
- const chathistory= await Chat.findOne({chatRoom:req.body.id})
+ const chathistory= await Chat.findOne({chatRoom:req.body.data.id})
  const chat=chathistory?.chathistory
+ const senderchats=chat?.filter((item)=>item.author!==req.body.data.userid)
+ let sendeid
+ if (senderchats) {
+    sendeid=senderchats[0]?.author   
+ }
+const profile=await Guest.findOne({_id:sendeid})
+const name=profile?.name
  if(chathistory){
-  res.status(200).send({ chat,success:true})
+  res.status(200).send({ chat,name,success:true})
  }
 }
 

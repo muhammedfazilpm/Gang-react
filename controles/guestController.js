@@ -1,6 +1,7 @@
 const Guest = require("../model/guestModel");
 const Location = require("../model/locationModel");
 const Guidedetails = require("../model/guideDetailsModel");
+const Guide=require('../model/guideModel')
 const Order = require("../model/orderModel");
 const Rating=require('../model/ratingModel')
 const Chat=require('../model/chatModel')
@@ -11,7 +12,7 @@ const Razorpay=require('razorpay')
 require("dotenv").config();
 
 const jwt = require("jsonwebtoken");
-const { triggerAsyncId } = require("async_hooks");
+
 
 var instance = new Razorpay({
   key_id: process.env.key_id,
@@ -358,7 +359,6 @@ const submitReview=async(req,res)=>{
  const Oreders=await Order.findOne({_id:req.body.data})
  const guest=await Guest.findOne({_id:Oreders.guestid})
 const exist=await Rating.findOne({guideid:Oreders.guideid,guestid:Oreders.guestid})
-console.log("exist",exist)
 if(exist){
   const update = await Rating.findOneAndUpdate(
     { guideid: Oreders.guideid, guestid: Oreders.guestid },
@@ -431,17 +431,24 @@ const getsenderId=async(req,res)=>{
 
 }
 const getChat= async (req,res)=>{
-  console.log("rooms",req.body.data.id)
-  console.log("author",req.body.data.userid)
-  
-  try {
   const chathistory= await Chat.findOne({chatRoom:req.body.data.id})
+  const chats=chathistory?.chathistory
+  const senderchats=chats?.filter((item)=>item.author!==req.body.data.userid)
+  let sendeid
+  if (senderchats) {
+     sendeid=senderchats[0]?.author   
+  }
+ const profile=await Guide.findOne({_id:sendeid})
+ const image=profile?.profile
+ const name=profile?.name
+  try {
  const chat=chathistory?.chathistory
  if(chathistory){
-  res.status(200).send({ chat,success:true})
+  res.status(200).send({ chat,image,name,success:true})
  }
     
   } catch (error) {
+    res.status(500)
     
   }
 
