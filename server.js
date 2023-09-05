@@ -16,8 +16,7 @@ const adminRoutes = require('./routes/adminRoutes');
 
 app.use(cors({
     credentials:true,
-    origin:['http://localhost:3000'],
-    origin:['https://gangguest.netlify.app/']
+    origin:['http://localhost:3000']
 }
 
     
