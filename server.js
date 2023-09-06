@@ -18,6 +18,11 @@ app.use(cors({
     credentials: true,
     origin: 'https://gangguide.netlify.app',
   }));
+
+  const corsOptions = {
+    origin: 'http://globalone.shop', 
+    credentials: true,
+  }
 app.use(express.json());
 
 app.use("/api/guide/", guideRoutes);
