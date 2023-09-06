@@ -15,13 +15,10 @@ const guestRoutes = require('./routes/guestRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
 app.use(cors({
-    credentials: true,
-    origin: 'https://gangguide.netlify.app',
+    origin: '*',
+  credentials: true,
   }));
-  app.use(cors({
-    credentials: true,
-    origin: 'http://globalone.shop',
-  }));
+ 
 
   
 app.use(express.json());
