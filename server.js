@@ -14,10 +14,7 @@ const guideRoutes = require("./routes/guideRoutes");
 const guestRoutes = require('./routes/guestRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
-app.use(cors({
-    origin: '*',
-  credentials: true,
-  }));
+app.use(cors());
  
 
   
@@ -31,7 +28,6 @@ const io = new Server(server, {
     cors: {
         
         origin: "*",
-        methods: ["GET", "POST"]
     },
 });
 
