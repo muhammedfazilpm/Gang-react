@@ -15,12 +15,9 @@ const guestRoutes = require('./routes/guestRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
 app.use(cors({
-    credentials:true,
-    origin:['http://localhost:3000']
-}
-
-        
-    ));
+    credentials: true,
+    origin: 'https://gangguide.netlify.app',
+  }));
 app.use(express.json());
 
 app.use("/api/guide/", guideRoutes);
