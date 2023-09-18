@@ -68,10 +68,9 @@ const sendVerifyMail = async (name, email, otp) => {
 const GuideRegitration = async (req, res) => {
   try {
     const guideExist = await Guide.findOne({ email: req.body.email });
-
     if (guideExist) {
       return res
-        .status(400)
+        .status(200)
         .send({ message: "user already exist", success: false });
     }
 
@@ -335,7 +334,7 @@ const addDetails = async (req, res) => {
 const editProfile = async (req, res) => {
   console.log("ENTER");
   try {
-    if (!req.file.filename) {
+    if (!req.file) {
       res.status(200).send({ message: "Check the image", success: false });
     }
     const image = req.file.filename;
@@ -557,6 +556,9 @@ const chatHistory=async(room,message,author)=>{
   }
 }
 const getChat=async(req,res)=>{
+  const order=await Orders.findOne({_id:req.body.data.id}) 
+  const name=order.guest
+
  const chathistory= await Chat.findOne({chatRoom:req.body.data.id})
  const chat=chathistory?.chathistory
  const senderchats=chat?.filter((item)=>item.author!==req.body.data.userid)
@@ -564,10 +566,13 @@ const getChat=async(req,res)=>{
  if (senderchats) {
     sendeid=senderchats[0]?.author   
  }
-const profile=await Guest.findOne({_id:sendeid})
-const name=profile?.name
+
  if(chathistory){
   res.status(200).send({ chat,name,success:true})
+ }
+ else{
+  res.status(200).send({name,success:false})
+
  }
 }
 

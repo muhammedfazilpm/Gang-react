@@ -16,7 +16,10 @@ const adminRoutes = require('./routes/adminRoutes');
 
 app.use(cors());
  
-
+// app.use(cors({
+//     credentials:true,
+//     origin:['https://strong-kangaroo-616bd0.netlify.app']
+// }))
   
 app.use(express.json());
 
@@ -46,7 +49,7 @@ io.on("connect", (socket) => {
         io.to(data.room).emit("receive_message", data);
         const {room,author,message}=data
         console.log("here for chat ",data)
-             await   guideController.chatHistory(room,message,author)
+            //  await   guideController.chatHistory(room,message,author)
     })
 
     
