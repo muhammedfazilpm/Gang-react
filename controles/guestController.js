@@ -432,6 +432,9 @@ const getsenderId=async(req,res)=>{
 }
 const getChat= async (req,res)=>{
   const chathistory= await Chat.findOne({chatRoom:req.body.data.id})
+  const order=await Order.findOne({_id:req.body.data.id})
+ 
+  const name=order.guide
   const chats=chathistory?.chathistory
   const senderchats=chats?.filter((item)=>item.author!==req.body.data.userid)
   let sendeid
@@ -440,11 +443,15 @@ const getChat= async (req,res)=>{
   }
  const profile=await Guide.findOne({_id:sendeid})
  const image=profile?.profile
- const name=profile?.name
+//  const name=profile?.name
   try {
  const chat=chathistory?.chathistory
  if(chathistory){
   res.status(200).send({ chat,image,name,success:true})
+ }
+ else{
+  res.status(200).send({name,success:false})
+
  }
     
   } catch (error) {
