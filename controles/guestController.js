@@ -443,7 +443,6 @@ const getChat= async (req,res)=>{
   }
  const profile=await Guide.findOne({_id:sendeid})
  const image=profile?.profile
-//  const name=profile?.name
   try {
  const chat=chathistory?.chathistory
  if(chathistory){

@@ -49,7 +49,7 @@ io.on("connect", (socket) => {
         io.to(data.room).emit("receive_message", data);
         const {room,author,message}=data
         console.log("here for chat ",data)
-            //  await   guideController.chatHistory(room,message,author)
+             await   guideController.chatHistory(room,message,author)
     })
 
     
