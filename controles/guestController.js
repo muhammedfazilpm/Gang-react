@@ -14,10 +14,7 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 
-var instance = new Razorpay({
-  key_id: process.env.key_id,
-  key_secret: process.env.key_secret
-});
+
 
 let guestmail;
 let otp;
@@ -160,7 +157,7 @@ const login = async (req, res) => {
       } else {
         res
           .status(200)
-          .send({ message: "please verify your email id", success: false });
+          .send({ message: "Please verify your email id", success: false });
       }
     }
   } catch (error) {
